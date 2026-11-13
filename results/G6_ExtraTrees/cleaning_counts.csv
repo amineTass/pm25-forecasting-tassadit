@@ -1,0 +1,12 @@
+stage,count
+missing_target,0
+invalid_low,2093
+invalid_high,19
+valid_target_rows,85929
+unmapped_valid_target_rows,8624
+valid_mapped_target_rows,77305
+missing_same_day_gee,30391
+same_day_matched_rows,46914
+forecast_rows,45383
+development_rows,33282
+holdout_rows,12101

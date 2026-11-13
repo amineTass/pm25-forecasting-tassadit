@@ -1,0 +1,6 @@
+fold,train_rows,validation_rows,transformed_columns,all_finite,empty_training_features,scaling
+1,2121,1604,22,True,NO2_lag1;CO_lag1;O3_lag1,disabled for Extra Trees
+2,3719,3031,22,True,,disabled for Extra Trees
+3,6756,6784,22,True,,disabled for Extra Trees
+4,13530,5703,22,True,,disabled for Extra Trees
+5,19237,14039,22,True,,disabled for Extra Trees

@@ -1,0 +1,8 @@
+{
+  "provided_valid_rows": 40983,
+  "reconstructed_valid_rows": 46914,
+  "exact_valid_rows_retained": 40983,
+  "additional_valid_same_day_rows": 5931,
+  "exact_valid_rows_not_retained": 0,
+  "primary_rule": "Assignment section 5.3.4: date and fixed nearest coordinates within 0.25 degrees"
+}

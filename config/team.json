@@ -1,0 +1,14 @@
+{
+  "members": [
+    "Amrane Mohamed",
+    "Bensaidane Nazim Adem",
+    "Tassadit Mohamed Amine",
+    "Benabdi Adem"
+  ],
+  "github_profiles": [
+    "https://github.com/nazim-code04",
+    "https://github.com/benabdiadem",
+    "https://github.com/amineTass"
+  ],
+  "assigned_model": "ExtraTreesRegressor"
+}

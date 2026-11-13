@@ -1,0 +1,4 @@
+file,rows,columns,exact_duplicates,date_min,date_max
+pm25.csv,88041,5,0,2016-11-21,2026-04-16
+gee_features_daily.csv,164208,13,0,2016-11-21,2026-04-06
+combined_gee_pm25.csv,41718,15,0,2016-11-25,2026-04-06

@@ -1,0 +1,13 @@
+test_complete_history_statistics (test_protocol.ProtocolTests.test_complete_history_statistics) ... ok
+test_extra_trees_factory_without_scaling_and_reproducible (test_protocol.ProtocolTests.test_extra_trees_factory_without_scaling_and_reproducible) ... ok
+test_folds_work_with_nondefault_index_and_respect_groups (test_protocol.ProtocolTests.test_folds_work_with_nondefault_index_and_respect_groups) ... ok
+test_future_test_rows_rejected (test_protocol.ProtocolTests.test_future_test_rows_rejected) ... ok
+test_gap_masks_lag_and_incomplete_rolling_window (test_protocol.ProtocolTests.test_gap_masks_lag_and_incomplete_rolling_window) ... ok
+test_stations_never_mix (test_protocol.ProtocolTests.test_stations_never_mix) ... ok
+test_target_at_prediction_day_does_not_change_inputs (test_protocol.ProtocolTests.test_target_at_prediction_day_does_not_change_inputs) ... ok
+test_training_only_imputation_and_explicit_gas_indicators (test_protocol.ProtocolTests.test_training_only_imputation_and_explicit_gas_indicators) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.146s
+
+OK

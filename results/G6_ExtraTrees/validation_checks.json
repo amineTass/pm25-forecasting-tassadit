@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "fold": 1,
+      "train_rows": 2121,
+      "validation_rows": 1604,
+      "transformed_columns": 22,
+      "all_finite": true,
+      "empty_training_features": "NO2_lag1;CO_lag1;O3_lag1",
+      "scaling": "disabled for Extra Trees"
+    },
+    {
+      "fold": 2,
+      "train_rows": 3719,
+      "validation_rows": 3031,
+      "transformed_columns": 22,
+      "all_finite": true,
+      "empty_training_features": "",
+      "scaling": "disabled for Extra Trees"
+    },
+    {
+      "fold": 3,
+      "train_rows": 6756,
+      "validation_rows": 6784,
+      "transformed_columns": 22,
+      "all_finite": true,
+      "empty_training_features": "",
+      "scaling": "disabled for Extra Trees"
+    },
+    {
+      "fold": 4,
+      "train_rows": 13530,
+      "validation_rows": 5703,
+      "transformed_columns": 22,
+      "all_finite": true,
+      "empty_training_features": "",
+      "scaling": "disabled for Extra Trees"
+    },
+    {
+      "fold": 5,
+      "train_rows": 19237,
+      "validation_rows": 14039,
+      "transformed_columns": 22,
+      "all_finite": true,
+      "empty_training_features": "",
+      "scaling": "disabled for Extra Trees"
+    }
+  ],
+  "causal_features": "All atmospheric input dates equal target date minus one calendar day",
+  "lag_values": "Exact site/date values; each lag k additionally requires every preceding day 1..k",
+  "holdout": "No future-test row in development folds; no future-test performance or EDA distributions computed",
+  "spatial": "Primary station-ID GroupKFold; additional grid-ID grouped diagnostic",
+  "supplied_provenance": "All supplied rows found in raw tables, target and predictor values checked"
+}

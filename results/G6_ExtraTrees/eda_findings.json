@@ -1,0 +1,62 @@
+{
+  "target_median": 7.666666666666667,
+  "target_mean": 9.25987655299663,
+  "target_skew": 18.89822987049427,
+  "target_p25": 4.526666666666667,
+  "target_p75": 11.923076923076923,
+  "above25_pct": 2.698667891593937,
+  "above50_pct": 0.2756086357372531,
+  "gas_missing_pct": {
+    "NO2": 6.910312356453835,
+    "CO": 6.910312356453835,
+    "O3": 7.028020211299954
+  },
+  "median_missing_day_pct": 17.967484612892775,
+  "longest_run_station": "S090",
+  "longest_run_days": 286,
+  "median_calendar_lag1": 0.6315001937437074,
+  "sites_tested_adf": 69,
+  "outliers": {
+    "rule": "development IQR only; flag, preserve plausible events",
+    "lower": -6.567948717948717,
+    "upper": 23.017692307692307,
+    "flagged_count": 1257
+  },
+  "target_correlations": {
+    "AOD": 0.14383362525597887,
+    "NO2": 0.22081186195799243,
+    "CO": 0.014252884299548628,
+    "O3": -0.15630838932337973,
+    "temperature_celsius": 0.023062822538626036,
+    "pressure_mb": 0.17268406555681173,
+    "wind_u": -0.13544923222560526,
+    "wind_v": 0.07015745547793553
+  },
+  "high_correlation_pairs": 0,
+  "aod_seasonal_associations": [
+    {
+      "stratification": "season",
+      "group": "DJF",
+      "rows": 6907,
+      "spearman": 0.23510269929830682
+    },
+    {
+      "stratification": "season",
+      "group": "JJA",
+      "rows": 11364,
+      "spearman": 0.15453615674170165
+    },
+    {
+      "stratification": "season",
+      "group": "MAM",
+      "rows": 7513,
+      "spearman": 0.17686560186325131
+    },
+    {
+      "stratification": "season",
+      "group": "SON",
+      "rows": 9048,
+      "spearman": 0.19958023658122484
+    }
+  ]
+}

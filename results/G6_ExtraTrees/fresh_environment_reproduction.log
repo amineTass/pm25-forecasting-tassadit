@@ -1,0 +1,77 @@
+1/6 Source audit and causal feature construction
+2/6 Development EDA and station-wise temporal diagnostics
+3/6 Freeze temporal, station, grid and random partitions
+4/6 Verify source alignment and fold-fitted preprocessing
+5/6 Generate the English report from these results
+6/6 Completed. See reports/ and results/G6_ExtraTrees
+{
+  "inventory": [
+    {
+      "file": "pm25.csv",
+      "rows": 88041,
+      "columns": 5,
+      "exact_duplicates": 0,
+      "date_min": "2016-11-21",
+      "date_max": "2026-04-16"
+    },
+    {
+      "file": "gee_features_daily.csv",
+      "rows": 164208,
+      "columns": 13,
+      "exact_duplicates": 0,
+      "date_min": "2016-11-21",
+      "date_max": "2026-04-06"
+    },
+    {
+      "file": "combined_gee_pm25.csv",
+      "rows": 41718,
+      "columns": 15,
+      "exact_duplicates": 0,
+      "date_min": "2016-11-25",
+      "date_max": "2026-04-06"
+    }
+  ],
+  "archive_sha256": "bd7a65c975cee1a833ff58a094b48a5a0806488b549ef0510210e8d694fa654b",
+  "missing_target": 0,
+  "invalid_low": 2093,
+  "invalid_high": 19,
+  "valid_target_rows": 85929,
+  "physical_stations": 133,
+  "sensor_names": 125,
+  "mapped_stations": 116,
+  "unmapped_valid_target_rows": 8624,
+  "valid_mapped_target_rows": 77305,
+  "same_day_matched_rows": 46914,
+  "missing_same_day_gee": 30391,
+  "forecast_rows": 45383,
+  "development_rows": 33282,
+  "holdout_rows": 12101,
+  "eda_rows": 34832,
+  "eda_stations": 88,
+  "source_checks": {
+    "provided_rows": 41718,
+    "target_rows_found": 41718,
+    "target_mismatches": 0,
+    "predictor_mismatches": {
+      "AOD": 0,
+      "NO2": 0,
+      "CO": 0,
+      "O3": 0,
+      "temperature_celsius": 0,
+      "pressure_mb": 0,
+      "wind_u": 0,
+      "wind_v": 0
+    },
+    "datetime_utc_agrees_with_date": true,
+    "provided_max_grid_distance_degrees": 0.0
+  },
+  "join_sensitivity": {
+    "provided_valid_rows": 40983,
+    "reconstructed_valid_rows": 46914,
+    "exact_valid_rows_retained": 40983,
+    "additional_valid_same_day_rows": 5931,
+    "exact_valid_rows_not_retained": 0,
+    "primary_rule": "Assignment section 5.3.4: date and fixed nearest coordinates within 0.25 degrees"
+  },
+  "test_start": "2025-01-01"
+}

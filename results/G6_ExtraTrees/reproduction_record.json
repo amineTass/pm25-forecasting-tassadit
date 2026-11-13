@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "core_environment": "Fresh virtual environment, Python 3.12 on Linux",
+  "regression_tests": 8,
+  "notebook_code_cells_executed": 11,
+  "source_archive_verified": true,
+  "full_pipeline_exit_code": 0,
+  "native_windows_execution_tested": false,
+  "native_powerpoint_execution_tested": false,
+  "pptx_structure_and_rendering": "PASS",
+  "scope": "Exploration and preprocessing; real-data model experiments not run"
+}

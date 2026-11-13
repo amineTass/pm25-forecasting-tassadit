@@ -1,0 +1,32 @@
+{
+  "source_archive_sha256": "bd7a65c975cee1a833ff58a094b48a5a0806488b549ef0510210e8d694fa654b",
+  "development_csv_sha256": "9397d53eeb21b16ca9da45ee76b8ff057344ae2e1a7f05a44e56819a1cada97a",
+  "rows": 33282,
+  "features": [
+    "AOD_lag1",
+    "NO2_lag1",
+    "CO_lag1",
+    "O3_lag1",
+    "temperature_celsius_lag1",
+    "pressure_mb_lag1",
+    "wind_u_lag1",
+    "wind_v_lag1",
+    "wind_speed_lag1",
+    "dayofyear_sin",
+    "dayofyear_cos",
+    "pm25_lag1",
+    "pm25_lag2",
+    "pm25_lag3",
+    "pm25_lag7",
+    "pm25_past3_mean",
+    "pm25_past3_std",
+    "pm25_past7_mean",
+    "pm25_past7_std"
+  ],
+  "folds": {
+    "folds_spatial.json": "c354c2f7155eb5a84d28884f569cb8718de13b331a624c0bb134bcf8710ce14f",
+    "folds_spatial_grid.json": "346973d18df587173e9aace04471b3a973db659dd97f3128234f900fcb6282b3",
+    "folds_standard.json": "addfe95c1b063265416b2615b00cc770a6ba6dd6c646cf1bf182417e2fe0cff4",
+    "folds_temporal.json": "6f99cee87c0db9d7ef24633fa1fcc12fa8758ae0d921e0c994c89b814d29f5f5"
+  }
+}
