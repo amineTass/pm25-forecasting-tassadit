@@ -8,6 +8,6 @@ test_target_at_prediction_day_does_not_change_inputs (test_protocol.ProtocolTest
 test_training_only_imputation_and_explicit_gas_indicators (test_protocol.ProtocolTests.test_training_only_imputation_and_explicit_gas_indicators) ... ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 0.146s
+Ran 8 tests in 0.098s
 
 OK

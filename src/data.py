@@ -1,7 +1,8 @@
 """Source validation, fixed station matching, and causal daily features."""
 from pathlib import Path
 import hashlib
-import json
+import os
+from tempfile import NamedTemporaryFile
 import urllib.request
 import zipfile
 import numpy as np
@@ -34,24 +35,34 @@ def target_history(forecasting, mapped):
     return result
 
 
+def verify_archive(path, expected):
+    if not zipfile.is_zipfile(path):
+        raise ValueError('Expected a ZIP archive. Save Kaggle dataset version 1 as data/raw/dataset.zip.')
+    if expected and hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+        raise ValueError('Source archive differs from the audited version. Replace data/raw/dataset.zip with Kaggle dataset version 1.')
+
+
 def download(config):
     raw = ROOT / 'data/raw'
     raw.mkdir(parents=True, exist_ok=True)
-    # Pin v1: a changed upstream dataset must not silently change the analysis.
     path = raw / 'dataset.zip'
-    if not path.exists():
-        url = f"https://www.kaggle.com/api/v1/datasets/download/{config['dataset']}?datasetVersionNumber={config['dataset_version']}"
-        with urllib.request.urlopen(url, timeout=120) as response:
-            path.write_bytes(response.read())
-    if not zipfile.is_zipfile(path):
-        raise ValueError('Download is not a ZIP. Download Kaggle v1 manually into data/raw/dataset.zip.')
     expected = config.get('dataset_archive_sha256')
-    if expected and hashlib.sha256(path.read_bytes()).hexdigest() != expected:
-        raise ValueError('Source archive differs from the audited version. Restore Kaggle v1; do not reuse old folds.')
-    meta = raw / 'dataset_metadata.json'
-    if not meta.exists():
-        with urllib.request.urlopen(f"https://www.kaggle.com/api/v1/datasets/view/{config['dataset']}", timeout=60) as response:
-            meta.write_bytes(response.read())
+    if path.exists():
+        verify_archive(path, expected)
+        return path
+
+    url = f"https://www.kaggle.com/api/v1/datasets/download/{config['dataset']}?datasetVersionNumber={config['dataset_version']}"
+    with NamedTemporaryFile(dir=raw, suffix='.download', delete=False) as temporary:
+        candidate = Path(temporary.name)
+    try:
+        with urllib.request.urlopen(url, timeout=120) as response:
+            candidate.write_bytes(response.read())
+        verify_archive(candidate, expected)
+        os.replace(candidate, path)
+    except OSError as error:
+        raise RuntimeError('Could not download Kaggle dataset version 1. Save it manually as data/raw/dataset.zip.') from error
+    finally:
+        candidate.unlink(missing_ok=True)
     return path
 
 

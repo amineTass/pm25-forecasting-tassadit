@@ -18,10 +18,14 @@ from .model import SEARCH_SPACE
 
 def run():
     started=time.perf_counter()
-    config=json.loads((ROOT/'config/project.json').read_text())
-    output=ROOT/'results'/config['group'];output.mkdir(parents=True,exist_ok=True)
-    (output/'figures').mkdir(exist_ok=True)
-    processed=ROOT/'data/processed';processed.mkdir(parents=True,exist_ok=True)
+    config=json.loads((ROOT/'src/config/project.json').read_text(encoding='utf-8'))
+    group = config['submission_group_code'] or config['group']
+    output = ROOT / 'results' / group
+    figures = ROOT / 'figures' / group
+    fold_dir = ROOT / 'folds' / group
+    processed = ROOT / 'data' / 'processed'
+    for directory in (output, figures, fold_dir, processed):
+        directory.mkdir(parents=True, exist_ok=True)
     print('1/6 Source audit and causal feature construction',flush=True)
     data=prepare(config)
     data['stations'].to_csv(output/'station_mapping.csv',index=False)
@@ -29,13 +33,13 @@ def run():
     pd.DataFrame(data['summary']['inventory']).to_csv(output/'source_inventory.csv',index=False)
     (output/'audit.json').write_text(json.dumps(data['summary'],indent=2),encoding='utf-8')
     (output/'join_sensitivity.json').write_text(json.dumps(data['summary']['join_sensitivity'],indent=2),encoding='utf-8')
-    data['development'].to_csv(processed/'development_forecast.csv',index=False)
-    data['holdout'].to_csv(processed/'future_test_reserved.csv',index=False)
+    data['development'].to_csv(processed/'development_forecast.csv', index=False, lineterminator='\n')
+    data['holdout'].to_csv(processed/'future_test_reserved.csv', index=False, lineterminator='\n')
     print('2/6 Development EDA and station-wise temporal diagnostics',flush=True)
-    info=explore(data,output,config)
+    info=explore(data, output, figures, config)
     print('3/6 Freeze temporal, station, grid and random partitions',flush=True)
     development=data['development']
-    folds=save_folds(development,output,config)
+    folds=save_folds(development, fold_dir, config)
     print('4/6 Verify source alignment and fold-fitted preprocessing',flush=True)
     checks=[]
     for number,(train,validation) in enumerate(folds['temporal'],1):
@@ -74,12 +78,14 @@ def run():
                     supplied_provenance='All supplied rows found in raw tables, target and predictor values checked')
     (output/'validation_checks.json').write_text(json.dumps(validation,indent=2),encoding='utf-8')
     (output/'extra_trees_plan.json').write_text(json.dumps(dict(model='ExtraTreesRegressor',status='Factory implemented; real-data training not run',
-                   search_space=SEARCH_SPACE,seed=42,bootstrap=False,scaling=False,
+                   search_space=SEARCH_SPACE,search_strategy='Random search',seed=config['seed'],bootstrap=False,scaling=False,
                    tuning='Inner training partitions only; never outer validation or future test',max_configurations=50,
                    robustness='Keep top three distinct configurations; perturb key settings',baselines=['Training mean','Persistence on observed lag1 rows; report coverage']),indent=2),encoding='utf-8')
-    versions={n:importlib.metadata.version(n) for n in ['numpy','pandas','scipy','scikit-learn','matplotlib','seaborn','statsmodels','reportlab']}
+    versions={n:importlib.metadata.version(n) for n in ['numpy','pandas','scipy','scikit-learn','matplotlib','seaborn','statsmodels','reportlab','Pillow']}
     code=hashlib.sha256()
-    for source in sorted((ROOT/'src').glob('*.py')):code.update(source.name.encode());code.update(source.read_bytes())
+    for source in sorted((ROOT / 'src').glob('*.py')):
+        code.update(source.name.encode())
+        code.update(source.read_bytes())
     metadata=dict(timestamp_utc=datetime.now(timezone.utc).isoformat(),stage='Data exploration and preprocessing',model='ExtraTreesRegressor',
                   seed=config['seed'],python=sys.version.split()[0],platform=platform.platform(),machine=platform.machine(),logical_cpus=os.cpu_count(),
                   configuration=json.dumps(config,sort_keys=True),config_sha256=hashlib.sha256(json.dumps(config,sort_keys=True).encode()).hexdigest(),
@@ -92,15 +98,15 @@ def run():
                   gas_imputation='Training-fold median plus three explicit indicators; zero fallback only for all-empty training columns',scaling=False,
                   availability_assumption='Daily t-1 atmospheric inputs and past ground observations available at issue time; publication latency not verified'),indent=2),encoding='utf-8')
     manifest=dict(source_archive_sha256=data['summary']['archive_sha256'],development_csv_sha256=hashlib.sha256((processed/'development_forecast.csv').read_bytes()).hexdigest(),
-                  rows=len(development),features=FEATURES,folds={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(output.glob('folds_*.json'))})
-    (output/'fold_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
+                  rows=len(development),features=FEATURES,folds={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(fold_dir.glob('folds_*.json'))})
+    (fold_dir/'fold_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     consolidated=ROOT/'results/consolidated';consolidated.mkdir(exist_ok=True)
     for name in ['Exploratory_Data.csv','Exploratory_temporal.csv','experiments.csv']:
-        table=pd.read_csv(output/name);table.insert(0,'group',config['group']);table.to_csv(consolidated/name,index=False)
+        table=pd.read_csv(output/name);table.insert(0,'group',group);table.to_csv(consolidated/name,index=False)
     print('5/6 Generate the English report from these results',flush=True)
     from .report import make_report
-    make_report(data['summary'],info,output,config)
-    print('6/6 Completed. See reports/ and results/'+config['group'],flush=True)
+    make_report(data['summary'], info, output, figures, fold_dir, config)
+    print(f'6/6 Completed. See reports/ and results/{group}/', flush=True)
     print(json.dumps(data['summary'],indent=2))
 
 

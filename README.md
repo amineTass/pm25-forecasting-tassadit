@@ -12,34 +12,37 @@ This submission covers **data exploration and preprocessing, due 14 November 202
 - `presentation/`: 15-minute PowerPoint, PDF slide copy and rehearsal/Q&A guide.
 - `reports/PM25_Project_Simple_Explanation.pdf`: a short plain-language explanation.
 - `notebooks/01_EDA_and_Preprocessing.ipynb`: executed analysis with explanations.
-- `results/G6_ExtraTrees/`: audit, summaries, plots, frozen partitions and verification records.
+- `results/G6_ExtraTrees/` holds the audit, CSV summaries, and run records.
+- `figures/G6_ExtraTrees/` holds the eight EDA figures.
+- `folds/G6_ExtraTrees/` holds the split definitions, fold overview, and checksums.
+- `scripts/` holds the launchers, tests, and local Git bundle.
 
-`G6_ExtraTrees` is a technical folder name based on the assigned method, not an invented formal class team code. If the teacher later gives a formal submission code, set `submission_group_code` in `config/project.json` and, if required, use that code as the result-folder value `group` before rerunning. Team names and the assigned model are already included.
+Section 9.3 requires the assigned class group code in `results/BXX-YY/`. G6 identifies the Extra Trees method. This package uses the temporary directory name `G6_ExtraTrees` because the class group code was unavailable. Once you have it, set `submission_group_code` in `src/config/project.json` and rerun the pipeline. It will write `results/<code>/`, `figures/<code>/` and `folds/<code>/` and update the consolidated CSV group column. Remove the old `G6_ExtraTrees` output directories from the submission after confirming the new output.
 
 ## Run on Windows
 
-Use Python **3.11 or 3.12**. Double-click `run_windows.cmd`, or run these commands from the extracted project folder in PowerShell:
+Use Python **3.11 or 3.12**. Double-click `scripts/run_windows.cmd`, or run these commands from the extracted project folder in PowerShell:
 
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -m unittest discover -s scripts/tests -v
 .\.venv\Scripts\python.exe -m src.run
 ```
 
-Replace `-3.12` with `-3.11` if appropriate. The launcher stops if a command fails. Its Windows execution still needs a native computer; the core pipeline was reproduced in a clean Python 3.12 environment on Linux. No GPU is required.
+Replace `-3.12` with `-3.11` if appropriate. The launcher stops if a command fails. The pipeline was reproduced on Linux with Python 3.12. The Windows launcher was reviewed and still needs a native Windows run. No GPU is required.
 
 ## Run on Linux / macOS
 
 ```bash
-bash run.sh
+bash scripts/run.sh
 ```
 
 Or create a Python 3.11/3.12 virtual environment, install `requirements.txt`, run the tests and execute `python -m src.run` as above. The exact core package versions are pinned.
 
-The first run downloads **Kaggle dataset version 1**, about 9 MB compressed, and verifies the audited archive checksum. If automatic download is unavailable, download v1 manually from the dataset page and save it as `data/raw/dataset.zip`. A checksum mismatch stops the run rather than mixing a different source with old folds. The source CSVs and generated observation-level tables are not redistributed in this archive. The code recreates them locally; all aggregate results and figures are included.
+The first run downloads **Kaggle dataset version 1**, about 9 MB compressed, and verifies the audited archive checksum. If automatic download is unavailable, download v1 manually from the dataset page and save it as `data/raw/dataset.zip`. The run checks the checksum before using the archive. The source CSVs and generated observation-level tables are not redistributed in this archive. The code recreates them locally; all aggregate results and figures are included.
 
-For interactive use, install `requirements-notebook.txt`, then launch JupyterLab from the same environment. Open the notebook with the project folder as its working directory. The command-line pipeline requires none of the optional notebook packages.
+For interactive use, run `python -m pip install -r notebooks/requirements-notebook.txt` in the project environment, then launch JupyterLab from the same environment. The notebook can start from the project root or from `notebooks/`. The command-line pipeline requires none of the optional notebook packages.
 
 ## Protocol
 
@@ -69,28 +72,28 @@ During a rolling daily validation block, an earlier day's observed PM2.5 may ent
 - `src/splits.py`: chronological, station, shared-grid and diagnostic random folds.
 - `src/run.py`: reproducible first-stage orchestration, verification and consolidation.
 - `src/report.py`: report generation from the same result tables.
-- `tests/test_protocol.py`: eight leakage/gap/model-factory regression tests.
+- `scripts/tests/test_protocol.py`: eight leakage/gap/model-factory regression tests.
 
-The required `Exploratory_Data.csv` combines typed numerical-summary and cleaning-count records. `Exploratory_temporal.csv` describes development station histories. Additional CSVs cover raw missingness, gas gaps, annual drift, monthly predictors, AOD conditional associations, forecast feature availability and empty training features. `results/consolidated/` contains this group's exploration files with an explicit group column; it does not pretend to consolidate other teams' results.
+The required `Exploratory_Data.csv` combines typed numerical-summary and cleaning-count records. `Exploratory_temporal.csv` describes development station histories. Additional CSVs cover raw missingness, gas gaps, annual drift, monthly predictors, AOD conditional associations, forecast feature availability and empty training features. `results/consolidated/` contains this group's exploration files with an explicit group column.
 
-Frozen JSON files contain `row_id` values, not assumed pandas index labels. `fold_manifest.json` ties them to the generated development CSV checksum. Do not edit the source, features or sample and then reuse earlier folds. `experiments.csv` records source/code/configuration hashes, versions, hardware, seed and runtime. The clean-environment execution and test evidence is also included.
+The JSON files under `folds/<group>/` use stable `row_id` values. `fold_manifest.json` ties them to the generated development CSV checksum. Do not edit the source, features or sample and then reuse earlier folds. `experiments.csv` records source/code/configuration hashes, versions, hardware, seed and runtime. The clean-environment execution and test evidence is also included.
 
 ## Later milestones
 
-Train a mean baseline, persistence baseline with explicit coverage, and Extra Trees. Tune the declared G6 ranges in inner training partitions, at most 50 configurations, retain three distinct candidates and test parameter sensitivity. Save real fold metrics, bootstrap uncertainty, runtime and model size. Then add training-size sensitivity, controlled ablations, paired tests with correction, permutation importance and ranking stability. Perform the final future evaluation only after freezing the design.
+Train a mean baseline, persistence baseline with explicit coverage, and Extra Trees. Use seeded random search within the outer training partitions, with up to 50 configurations from the declared G6 ranges. Retain three distinct candidates and test parameter sensitivity. Save real fold metrics, bootstrap uncertainty, runtime and model size. Then add training-size sensitivity, controlled ablations, paired tests with correction, permutation importance and ranking stability. Perform the final future evaluation only after freezing the design.
 
 `results.csv`, `hyperparameters.csv`, `feature_importance.csv`, `comparisons.csv`, `ablation.csv` and `ranking_stability.csv` belong to actual later model runs. Empty placeholders are not supplied as if they were results. The presentation clearly distinguishes measured EDA findings from this plan.
 
 ## Git reproduction
 
-A local repository snapshot is provided as `repository.bundle` in the complete delivery. Clone it with:
+A local repository snapshot is provided as `scripts/repository.bundle` in the complete delivery. Clone it with:
 
 ```bash
-git clone repository.bundle pm25-extra-trees
+git clone scripts/repository.bundle pm25-extra-trees
 cd pm25-extra-trees
 ```
 
-Then run the platform-specific instructions. The bundle contains source and configuration, without raw data or secrets. Team profile links supplied for attribution are recorded in `config/team.json`; no remote repository or public publication is assumed.
+Then run the platform-specific instructions. The bundle contains source and configuration, without raw data or secrets. Team profile links supplied for attribution are recorded in `src/config/team.json`. The bundle provides a local Git repository.
 
 ## Sources
 

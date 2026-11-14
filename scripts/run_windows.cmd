@@ -1,6 +1,6 @@
 @echo off
 setlocal
-cd /d "%~dp0"
+cd /d "%~dp0.."
 py -3.12 -c "import sys" >nul 2>&1
 if errorlevel 1 goto try311
 set "PROJECT_PY=py -3.12"
@@ -16,7 +16,7 @@ if errorlevel 1 goto failed
 :install
 ".venv\Scripts\python.exe" -m pip install -r requirements.txt
 if errorlevel 1 goto failed
-".venv\Scripts\python.exe" -m unittest discover -s tests -v
+".venv\Scripts\python.exe" -m unittest discover -s scripts/tests -v
 if errorlevel 1 goto failed
 ".venv\Scripts\python.exe" -m src.run
 if errorlevel 1 goto failed

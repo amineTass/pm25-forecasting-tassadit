@@ -27,10 +27,10 @@ def register_fonts():
 
 
 
-def make_report(a, e, output, config):
+def make_report(a, e, output, figures, fold_dir, config):
     pdf=ROOT/'reports/PM25_Phase1_Report.pdf'
     regular,bold=register_fonts()
-    team=json.loads((ROOT/'config/team.json').read_text())
+    team=json.loads((ROOT/'src/config/team.json').read_text(encoding='utf-8'))
     styles=getSampleStyleSheet()
     styles.add(ParagraphStyle(name='TitleCustom',fontName=bold,fontSize=25,leading=30,textColor=colors.HexColor('#16374b'),spaceAfter=18))
     styles.add(ParagraphStyle(name='SectionCustom',fontName=bold,fontSize=17,leading=21,textColor=colors.HexColor('#16374b'),spaceAfter=13))
@@ -41,7 +41,7 @@ def make_report(a, e, output, config):
     def p(text,style='BodyCustom'):story.append(Paragraph(text,styles[style]))
     def heading(number,text):p(f'{number}. {text}','SectionCustom')
     def image(name,width=475):
-        path=output/'figures'/f'{name}.png';w,h=ImageReader(str(path)).getSize()
+        path=figures/f'{name}.png';w,h=ImageReader(str(path)).getSize()
         story.append(Image(str(path),width=width,height=width*h/w));story.append(Spacer(1,10))
     def table(rows,widths=None):
         rows=[[Paragraph(escape(str(c)),styles['SmallCustom']) for c in row] for row in rows]
@@ -59,7 +59,7 @@ def make_report(a, e, output, config):
     p('Study objective','SectionCustom')
     p('Construct an auditable, reproducible dataset for one-day-ahead daily PM2.5 regression. The immediate questions are whether the measurements and metadata support time- and location-aware validation, how missingness and temporal gaps affect usable samples, and which transformations can be applied without using future information.')
     p('<b>Main findings.</b> The three supplied CSV files have different populations. Reconstructing a fixed nearest-grid join recovers observations omitted by the supplied exact-location join. Invalid target values are removed under the assignment rule. Missing calendar days and variable station coverage require explicit date-based lags. Daily inputs are shifted by one day for forecasting; same-day associations remain descriptive.')
-    p('<b>Status:</b> Real-data exploration and preprocessing have been executed. Automated temporal, spatial and preprocessing checks pass. This submission covers the November data milestone. The technical folder G6_ExtraTrees identifies the assigned method; it does not invent a formal class group code.')
+    p('<b>Status:</b> Real-data exploration and preprocessing have been executed. Automated temporal, spatial and preprocessing checks pass. This submission covers the November data milestone.')
     nextpage()
     heading(1,'Research questions and Extra Trees')
     p('<b>Main question.</b> How reliably can Extra Trees forecast daily PM2.5 at later dates and locations absent from fitting? Model experiments are pending; this milestone establishes the data and evaluation design needed to answer it.')
@@ -67,7 +67,8 @@ def make_report(a, e, output, config):
     p('<b>Assigned method.</b> Extra Trees combines randomized decision trees and averages their regression estimates. Random candidate thresholds introduce diversity. Trees can capture nonlinear relationships, but usefulness on this dataset must be measured. Complexity controls include tree depth and leaf size. Scaling is generally unnecessary. Our implementation fixes bootstrap=False and seed 42, retaining the prescribed training-fold imputation and gas indicators.')
     p('<b>Related method.</b> Geurts, Ernst and Wehenkel (2006), <i>Extremely randomized trees</i>, Machine Learning 63, 3-42, introduces this ensemble family (DOI 10.1007/s10994-006-6226-1). We use the documented scikit-learn 1.8 implementation. The original method paper is background, not evidence of PM2.5 accuracy or transfer to Algeria.')
     table([['Hyperparameter','Declared candidates from G6'],['n_estimators','100, 200, 500'],['max_depth','None, 10, 20, 30'],['min_samples_split','2, 5, 10'],['min_samples_leaf','1, 2, 4'],['max_features','sqrt, log2, None']], [210,265])
-    p('src/model.py provides a tested pipeline factory. The search plan caps configurations at 50 within training partitions, retains three distinct candidates, and checks sensitivity. No real-data model has been fitted for this milestone. The factory smoke test uses synthetic numbers only.','SmallCustom')
+    p('The assignment references ARIMA-WOA-LSTM (Luo &amp; Gong, 2023) and SARIMA-BiLSTM (Necula et al., 2025) as hybrid approaches to air-pollution forecasting. These time-series methods motivate checking station-wise temporal dependence. Our experiment uses Extra Trees with explicit calendar and lagged features.','SmallCustom')
+    p('src/model.py provides a tested pipeline factory. Random search samples up to 50 configurations within training partitions, retains three distinct candidates, and checks sensitivity. No real-data model has been fitted for this milestone. The factory smoke test uses synthetic numbers only.','SmallCustom')
     nextpage()
     heading(2,'Source, provenance and variables')
     p('Source: Sarah Ameziane, <i>Air Quality - Mediterranean Basin (2016-2026)</i>, Kaggle, dataset version 1. The publisher describes PM2.5 observations sourced from OpenAQ and atmospheric predictors extracted with Google Earth Engine from ERA5, Sentinel-5P and MODIS. These descriptions are provenance claims, not an independent instrument-quality certification.')
@@ -94,14 +95,14 @@ def make_report(a, e, output, config):
     p('Development same-day missingness is '+', '.join(f'{k}: {v:.2f}%' for k,v in e['gas_missing_pct'].items())+'. The temporal pattern matters: an overall percentage alone cannot show structural early-period absence. The publisher attributes gaps partly to clouds; the dataset alone does not establish a cause for every missing value.')
     p('Use training-fold median imputation for numerical features. Each gas also receives an explicit missingness indicator; gas values are never forward-filled across days. No backward fill or future-dependent interpolation is applied. If a feature is entirely absent from a training fold, the implementation retains a zero-filled column with an indicator and records the limitation; a later feature-availability sensitivity analysis is needed.')
     p(f"Development-only IQR screening flags {e['outliers']['flagged_count']:,} PM2.5 values outside [{e['outliers']['lower']:.2f}, {e['outliers']['upper']:.2f}] ug/m3. These observations remain in the dataset when they satisfy the assignment's fixed validity rule. An IQR flag alone does not demonstrate a measurement error.")
-    p('All variables receive numerical summaries, skewness, excess kurtosis, missingness counts, histograms and boxplots. The separate full boxplot panel is provided in figures/02_boxplots.png. Any future learned outlier threshold must be fitted inside training folds and compared on identical held-out observations.')
+    p(f'All variables receive numerical summaries, skewness, excess kurtosis, missingness counts, histograms and boxplots. The separate full boxplot panel is provided in {figures.relative_to(ROOT).as_posix()}/02_boxplots.png. Any future learned outlier threshold must be fitted inside training folds and compared on identical held-out observations.')
     p('KNN imputation is deferred until correlation stability across training folds can justify it. PCA and feature selection are also deferred rather than fitted globally. Tree models will use unscaled inputs; scale-sensitive models will use fold-fitted StandardScaler.')
     nextpage()
     heading(6,'Temporal regularity and dependence')
     image('03_temporal_patterns')
     p(f"The median within-site missing-calendar-day rate is {e['median_missing_day_pct']:.1f}% between each site's first and last observed development day. Changes in the pooled monthly distribution can reflect station composition as well as pollution changes. Pooled trends are descriptive and do not establish a common trend for all locations.")
     image('06_time_diagnostics')
-    p(f"Station-wise ACF uses exact calendar lags on reindexed daily ground series. The median lag-1 correlation is {e['median_calendar_lag1']:.3f}. The example above uses site {e['longest_run_station']}'s longest uninterrupted development run ({e['longest_run_days']} days). ADF and Ljung-Box are run only on contiguous, nonconstant segments of at least 30 days; {e['sites_tested_adf']} sites qualified.",'SmallCustom')
+    p(f"The source contains daily aggregates, so intraday seasonality cannot be assessed. Station-wise ACF uses exact calendar lags on reindexed daily ground series. The median lag-1 correlation is {e['median_calendar_lag1']:.3f}. The example above uses site {e['longest_run_station']}'s longest uninterrupted development run ({e['longest_run_days']} days). ADF and Ljung-Box are run only on contiguous, nonconstant segments of at least 30 days; {e['sites_tested_adf']} sites qualified.",'SmallCustom')
     p('An ADF p-value is evidence about a particular segment and specification, not proof of global stationarity. A weekly seasonal period is not assumed automatically. Lead-lag associations at negative lags are exploratory future-variable diagnostics and never become predictive inputs. Detailed per-site diagnostics and lead-lag results are provided in CSV form.','SmallCustom')
     nextpage()
     heading(7,'Spatial coverage and predictor associations')
@@ -129,7 +130,7 @@ def make_report(a, e, output, config):
     p('The serialized design is recorded in feature_manifest.json. Exact date alignment, historical lag values and predictor provenance are independently checked against the raw tables. No learned transformation is fitted on the final future period.')
     nextpage()
     heading(10,'Frozen validation and verification')
-    overview=pd.read_csv(output/'fold_overview.csv')
+    overview=pd.read_csv(fold_dir/'fold_overview.csv')
     table([['Temporal fold','Training end / validation period / rows']]+[[r.fold,f'{r.train_end} / {r.validation_start} to {r.validation_end} / {r.train_rows:,} + {r.validation_rows:,}'] for r in overview[overview.scheme.eq('temporal')].itertuples()], [85,390])
     p('Temporal CV uses five expanding training windows on a complete calendar with a one-day gap. Splitting row positions directly would risk placing different stations from the same day on opposite sides of a boundary. The implementation splits dates first and maps dates to row IDs. Each validation target date follows the training dates by at least two calendar days.')
     p('Primary spatial CV uses five GroupKFold partitions grouped by physical station ID. Extra grid-grouped folds provide a stricter shared-location sensitivity check. IDs and coordinates are excluded as predictive features. Diagnostic shuffled KFold uses seed 42 and is not eligible to select the final model. All development folds exclude target dates from 2025 onward. Fold row IDs are saved once and reused.')
@@ -140,8 +141,8 @@ def make_report(a, e, output, config):
     p('Model selection is deferred. Future hyperparameter optimization must be nested inside each training partition and respect the evaluation scenario. Reusing outer validation scores for tuning would bias the reported comparison.')
     nextpage()
     heading(11,'Delivery checklist and next milestones')
-    table([['Available for the first milestone','Location'],['Executable source and configuration','src/ and config/project.json'],['Guided notebook and instructions','notebooks/01_EDA_and_Preprocessing.ipynb; README.md'],['Required numerical / temporal summaries','Exploratory_Data.csv; Exploratory_temporal.csv'],['Missingness, drift, correlations and joining audit','results/G6_ExtraTrees/*.csv and audit.json'],['Frozen split definitions','folds_temporal.json; folds_spatial.json; folds_standard.json'],['Causal feature definition / validation evidence','feature_manifest.json; validation_checks.json'],['Charts and reproducibility metadata','figures/; experiments.csv']], [270,205])
-    p('<b>Reproduction.</b> Run the automated regression checks and python -m src.run. The pinned source archive is verified before use. Windows and Linux launchers stop on errors. An executed notebook explains the same pipeline. The result directory identifies the assigned method. The nearest-coordinate rule follows section 5.3.4; the exact-match sensitivity is saved for transparent comparisons.')
+    table([['Available for the first milestone','Location'],['Executable source and configuration','src/ and src/config/project.json'],['Guided notebook and instructions','notebooks/01_EDA_and_Preprocessing.ipynb; README.md'],['Required numerical / temporal summaries','Exploratory_Data.csv; Exploratory_temporal.csv'],['Missingness, drift, correlations and joining audit',f'results/{output.name}/'],['Frozen split definitions',f'folds/{fold_dir.name}/'],['Causal feature definition / validation evidence','feature_manifest.json; validation_checks.json'],['Charts and reproducibility metadata',f'figures/{figures.name}/ and experiments.csv']], [270,205])
+    p('<b>Reproduction.</b> Run the automated regression checks and python -m src.run. The pinned source archive is verified before use. The launchers in scripts/ stop on errors. An executed notebook explains the same pipeline. The output paths use the class group code when configured. The nearest-coordinate rule follows section 5.3.4; the exact-match sensitivity is saved for transparent comparisons.')
     p('<b>December milestone.</b> Use the confirmed Extra Trees assignment; add persistence and training-mean baselines with explicit eligible-row coverage; run tuning with the declared search budget; save fold-level metrics, runtimes and hyperparameters; and compare training sizes. Model choice uses temporal validation, with spatial results addressing transfer limitations. Reserve the future period until the design is frozen.')
     p('<b>January milestone.</b> Add paired fold comparisons with Holm correction and explicit five-fold uncertainty; permutation importance and ranking stability; reference-model ablations; concentration-band and monthly error analysis; and a justified operational recommendation. The final technical report must meet the assignment\'s 10-15-page English requirement and the oral presentation must fit 15 minutes.')
     p('<b>Limits.</b> No validation in Algeria is established. Matching and source coverage can bias the retained sample. Daily aggregation and sensor calibration are not independently verified. Atmospheric-input latency is assumed. Early gas coverage and intermittent target history need sensitivity checks. No model performance or scientific superiority is claimed at this stage.')

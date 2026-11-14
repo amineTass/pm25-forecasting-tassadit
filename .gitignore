@@ -1,7 +1,10 @@
+data/*
+!data/.gitkeep
+!data/raw/
+data/raw/*
+!data/raw/dataset_metadata.json
 .venv/
+venv/
 __pycache__/
 .ipynb_checkpoints/
-data/raw/*.zip
-data/processed/
-
-repository.bundle
+scripts/repository.bundle

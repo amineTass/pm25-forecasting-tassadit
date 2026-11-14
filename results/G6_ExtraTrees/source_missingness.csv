@@ -1,11 +1,11 @@
 file,variable,dtype,missing_count,missing_pct
-pm25.csv,date,str,0,0.0
+pm25.csv,date,object,0,0.0
 pm25.csv,latitude,float64,0,0.0
 pm25.csv,longitude,float64,0,0.0
 pm25.csv,pm25,float64,0,0.0
-pm25.csv,sensor_name,str,0,0.0
-gee_features_daily.csv,date,str,0,0.0
-gee_features_daily.csv,datetime_utc,str,0,0.0
+pm25.csv,sensor_name,object,0,0.0
+gee_features_daily.csv,date,object,0,0.0
+gee_features_daily.csv,datetime_utc,object,0,0.0
 gee_features_daily.csv,id,int64,0,0.0
 gee_features_daily.csv,lat,float64,0,0.0
 gee_features_daily.csv,lon,float64,0,0.0
@@ -17,8 +17,8 @@ gee_features_daily.csv,NO2,float64,19603,11.93790801909773
 gee_features_daily.csv,CO,float64,19603,11.93790801909773
 gee_features_daily.csv,O3,float64,19914,12.12730195849167
 gee_features_daily.csv,AOD,float64,0,0.0
-combined_gee_pm25.csv,date,str,0,0.0
-combined_gee_pm25.csv,datetime_utc,str,0,0.0
+combined_gee_pm25.csv,date,object,0,0.0
+combined_gee_pm25.csv,datetime_utc,object,0,0.0
 combined_gee_pm25.csv,id,int64,0,0.0
 combined_gee_pm25.csv,latitude,float64,0,0.0
 combined_gee_pm25.csv,longitude,float64,0,0.0
@@ -31,4 +31,4 @@ combined_gee_pm25.csv,CO,float64,2410,5.776882880291481
 combined_gee_pm25.csv,O3,float64,2451,5.875161800661585
 combined_gee_pm25.csv,AOD,float64,0,0.0
 combined_gee_pm25.csv,pm25,float64,0,0.0
-combined_gee_pm25.csv,sensor_name,str,0,0.0
+combined_gee_pm25.csv,sensor_name,object,0,0.0

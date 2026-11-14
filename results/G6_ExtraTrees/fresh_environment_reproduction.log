@@ -3,7 +3,7 @@
 3/6 Freeze temporal, station, grid and random partitions
 4/6 Verify source alignment and fold-fitted preprocessing
 5/6 Generate the English report from these results
-6/6 Completed. See reports/ and results/G6_ExtraTrees
+6/6 Completed. See reports/ and results/G6_ExtraTrees/
 {
   "inventory": [
     {

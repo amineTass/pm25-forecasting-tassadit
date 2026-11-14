@@ -15,9 +15,9 @@ sns.set_theme(style='whitegrid', context='notebook', palette=['#2377a5', '#d27c4
 plt.rcParams.update({'figure.dpi': 130, 'savefig.dpi': 160, 'axes.spines.top': False, 'axes.spines.right': False})
 
 
-def savefig(output, name):
+def savefig(figures, name):
     plt.tight_layout()
-    plt.savefig(output/'figures'/f'{name}.png', bbox_inches='tight')
+    plt.savefig(figures/f'{name}.png', bbox_inches='tight')
     plt.close()
 
 
@@ -30,7 +30,7 @@ def longest_run(series):
     return max(chunks, key=len)
 
 
-def explore(data, output, config):
+def explore(data, output, figures, config):
     frame = data['eda'].copy()
     nums = BASE_FEATURES + ['pm25']
     table = frame[nums].describe().T.rename(columns={'25%':'q25','50%':'median','75%':'q75'})
@@ -40,7 +40,6 @@ def explore(data, output, config):
     table['missing_pct'] = frame[nums].isna().mean()*100
     table['scope'] = 'development_same_day_matched'
     table.index.name = 'variable'
-    table.reset_index().to_csv(output/'Exploratory_Data.csv', index=False)
     pd.DataFrame([{'stage':k, 'count':data['summary'][k]} for k in [
         'missing_target','invalid_low','invalid_high','valid_target_rows','unmapped_valid_target_rows',
         'valid_mapped_target_rows','missing_same_day_gee','same_day_matched_rows','forecast_rows','development_rows','holdout_rows']
@@ -139,26 +138,26 @@ def explore(data, output, config):
     for ax,c in zip(axes.flat,nums):
         ax.hist(frame[c].dropna(),bins=45,color='#2377a5',alpha=.85)
         ax.set_title(c,fontsize=11);ax.set_ylabel('Rows')
-    savefig(output,'01_distributions')
+    savefig(figures,'01_distributions')
     fig,axes=plt.subplots(3,3,figsize=(12,8))
     for ax,c in zip(axes.flat,nums):
         ax.boxplot(frame[c].dropna(),vert=False,flierprops={'markersize':2});ax.set_title(c,fontsize=11)
-    savefig(output,'02_boxplots')
+    savefig(figures,'02_boxplots')
     fig,axes=plt.subplots(1,2,figsize=(12,4))
     axes[0].plot(pd.to_datetime(drift.index),drift['median'],color='#2377a5')
     axes[0].fill_between(pd.to_datetime(drift.index),drift.q25,drift.q75,color='#2377a5',alpha=.2)
     axes[0].set(ylabel='PM2.5 (ug/m3)',title='Monthly median and IQR; station mix varies')
     sns.boxplot(data=frame,x='month_number',y='pm25',showfliers=False,ax=axes[1],color='#96c5db')
     axes[1].set(xlabel='Calendar month',ylabel='PM2.5 (ug/m3)',title='Seasonality, pooled sites (outliers hidden)')
-    savefig(output,'03_temporal_patterns')
+    savefig(figures,'03_temporal_patterns')
     plt.figure(figsize=(9,7));sns.heatmap(correlations['spearman'],annot=True,fmt='.2f',vmin=-1,vmax=1,cmap='vlag',square=True)
-    plt.title('Development data: Spearman correlations');savefig(output,'04_correlations')
+    plt.title('Development data: Spearman correlations');savefig(figures,'04_correlations')
     missing=frame.groupby('year')[gases].agg(lambda s:s.isna().mean()*100)
     fig,axes=plt.subplots(1,2,figsize=(12,4))
     missing.plot(kind='bar',ax=axes[0]);axes[0].set(ylabel='Missing (%)',title='Gas missingness by year')
     temporal.missing_day_pct.hist(ax=axes[1],bins=20,color='#2377a5')
     axes[1].set(xlabel='Missing calendar days per site (%)',ylabel='Physical sites',title='Ground-series coverage between first/last day')
-    savefig(output,'05_missingness')
+    savefig(figures,'05_missingness')
     best=temporal.station_id.iloc[0];series,run=series_by_station[best]
     lag_count=min(30,len(run)//2-1)
     fig,axes=plt.subplots(1,3,figsize=(13,3.7))
@@ -169,7 +168,7 @@ def explore(data, output, config):
     for ax,values,title in [(axes[1],acf(run,nlags=lag_count),'ACF (contiguous run)'),(axes[2],pacf(run,nlags=lag_count,method='ywm'),'PACF (contiguous run)')]:
         ax.stem(np.arange(len(values)),values);ax.set(title=title,xlabel='Calendar lag (days)')
         ax.axhline(1.96/np.sqrt(len(run)),color='gray',ls='--');ax.axhline(-1.96/np.sqrt(len(run)),color='gray',ls='--')
-    savefig(output,'06_time_diagnostics')
+    savefig(figures,'06_time_diagnostics')
     fig,axes=plt.subplots(1,2,figsize=(12,4))
     sites=observed.groupby('station_id').agg(latitude=('latitude','first'),longitude=('longitude','first'),n=('pm25','size'))
     sc=axes[0].scatter(sites.longitude,sites.latitude,c=sites.n,cmap='viridis',s=25)
@@ -177,7 +176,7 @@ def explore(data, output, config):
     fig.colorbar(sc,ax=axes[0],label='Development target observations')
     observed.groupby('station_id').size().sort_values(ascending=False).head(15).plot(kind='bar',ax=axes[1],color='#2377a5')
     axes[1].set(title='15 most represented physical sites',ylabel='Development observations',xlabel='Site')
-    savefig(output,'07_spatial_coverage')
+    savefig(figures,'07_spatial_coverage')
     fig,axes=plt.subplots(1,3,figsize=(12,3.7))
     plots=[]
     for ax,c in zip(axes,['AOD','temperature_celsius','wind_u']):
@@ -189,7 +188,7 @@ def explore(data, output, config):
     fig.subplots_adjust(wspace=.38,right=.86,bottom=.18)
     color_axis=fig.add_axes([.90,.20,.014,.62])
     fig.colorbar(image,cax=color_axis,label='Rows per bin (log scale)')
-    fig.savefig(output/'figures/08_relationships.png',dpi=160,bbox_inches='tight');plt.close(fig)
+    fig.savefig(figures/'08_relationships.png',dpi=160,bbox_inches='tight');plt.close(fig)
     info = dict(target_median=float(frame.pm25.median()),target_mean=float(frame.pm25.mean()),
                 target_skew=float(frame.pm25.skew()),target_p25=float(q1),target_p75=float(q3),
                 above25_pct=float(100*frame.pm25.gt(25).mean()),above50_pct=float(100*frame.pm25.gt(50).mean()),

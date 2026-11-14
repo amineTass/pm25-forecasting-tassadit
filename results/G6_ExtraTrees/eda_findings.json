@@ -1,7 +1,7 @@
 {
   "target_median": 7.666666666666667,
   "target_mean": 9.25987655299663,
-  "target_skew": 18.89822987049427,
+  "target_skew": 18.898229870494273,
   "target_p25": 4.526666666666667,
   "target_p75": 11.923076923076923,
   "above25_pct": 2.698667891593937,
@@ -14,7 +14,7 @@
   "median_missing_day_pct": 17.967484612892775,
   "longest_run_station": "S090",
   "longest_run_days": 286,
-  "median_calendar_lag1": 0.6315001937437074,
+  "median_calendar_lag1": 0.631500193743707,
   "sites_tested_adf": 69,
   "outliers": {
     "rule": "development IQR only; flag, preserve plausible events",
@@ -23,14 +23,14 @@
     "flagged_count": 1257
   },
   "target_correlations": {
-    "AOD": 0.14383362525597887,
-    "NO2": 0.22081186195799243,
-    "CO": 0.014252884299548628,
-    "O3": -0.15630838932337973,
-    "temperature_celsius": 0.023062822538626036,
-    "pressure_mb": 0.17268406555681173,
-    "wind_u": -0.13544923222560526,
-    "wind_v": 0.07015745547793553
+    "AOD": 0.14383413382485105,
+    "NO2": 0.22081213095798238,
+    "CO": 0.014253686410003238,
+    "O3": -0.1563076217235963,
+    "temperature_celsius": 0.02306278653519483,
+    "pressure_mb": 0.17268394762804784,
+    "wind_u": -0.13544936194345256,
+    "wind_v": 0.07015764037456942
   },
   "high_correlation_pairs": 0,
   "aod_seasonal_associations": [
@@ -38,25 +38,25 @@
       "stratification": "season",
       "group": "DJF",
       "rows": 6907,
-      "spearman": 0.23510269929830682
+      "spearman": 0.23510326078628543
     },
     {
       "stratification": "season",
       "group": "JJA",
       "rows": 11364,
-      "spearman": 0.15453615674170165
+      "spearman": 0.1545371244641408
     },
     {
       "stratification": "season",
       "group": "MAM",
       "rows": 7513,
-      "spearman": 0.17686560186325131
+      "spearman": 0.1768654734143542
     },
     {
       "stratification": "season",
       "group": "SON",
       "rows": 9048,
-      "spearman": 0.19958023658122484
+      "spearman": 0.19958088447919403
     }
   ]
 }

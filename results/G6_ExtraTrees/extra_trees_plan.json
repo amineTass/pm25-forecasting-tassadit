@@ -29,6 +29,7 @@
       null
     ]
   },
+  "search_strategy": "Random search",
   "seed": 42,
   "bootstrap": false,
   "scaling": false,
